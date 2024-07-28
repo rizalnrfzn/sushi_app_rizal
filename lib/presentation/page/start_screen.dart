@@ -51,7 +51,7 @@ class StartScreen extends StatelessWidget {
             const SizedBox(height: 24),
             FilledButton(
               onPressed: () {
-                Navigator.of(context).push(
+                Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) => const HomeScreen(),
                   ),

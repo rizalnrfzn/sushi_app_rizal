@@ -22,4 +22,12 @@ class Food {
       rating: double.parse(json['rating']),
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'name': name,
+        'description': description,
+        'price': price,
+        'image_path': imagePath,
+        'rating': rating,
+      };
 }

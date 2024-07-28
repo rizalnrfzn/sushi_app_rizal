@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sushi_app/models/cart_item.dart';
 import 'package:sushi_app/models/food.dart';
+import 'package:sushi_app/presentation/page/cart_screen.dart';
 import 'package:sushi_app/presentation/theme/palette.dart';
+import 'package:sushi_app/presentation/widget/cart_icon.dart';
+import 'package:sushi_app/provider/cart.dart';
 
-class DetailFoodScreen extends StatelessWidget {
+class DetailFoodScreen extends StatefulWidget {
   const DetailFoodScreen({super.key, required this.food});
 
   final Food food;
+
+  @override
+  State<DetailFoodScreen> createState() => _DetailFoodScreenState();
+}
+
+class _DetailFoodScreenState extends State<DetailFoodScreen> {
+  int quantity = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +32,20 @@ class DetailFoodScreen extends StatelessWidget {
                 SliverAppBar.large(
                   expandedHeight: 400,
                   flexibleSpace: FlexibleSpaceBar(
-                    title: Text(food.name),
+                    title: Text(widget.food.name),
                     titlePadding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 12,
                     ),
                     centerTitle: false,
                     background: Image.asset(
-                      food.imagePath,
+                      widget.food.imagePath,
                       fit: BoxFit.cover,
                     ),
                   ),
+                  actions: const [
+                    CartIcon(),
+                  ],
                 ),
                 SliverToBoxAdapter(
                   child: Padding(
@@ -47,7 +62,7 @@ class DetailFoodScreen extends StatelessWidget {
                               children: [
                                 const Text('Price'),
                                 Text(
-                                  '${food.price.toString()} IDR',
+                                  '${widget.food.price.toString()} IDR',
                                   style: textTheme.headlineSmall,
                                 )
                               ],
@@ -72,7 +87,7 @@ class DetailFoodScreen extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                food.rating.toString(),
+                                widget.food.rating.toString(),
                                 style: textTheme.bodyLarge,
                               ),
                             ],
@@ -88,7 +103,7 @@ class DetailFoodScreen extends StatelessWidget {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              food.description,
+                              widget.food.description,
                               style: textTheme.bodyMedium,
                             ),
                           ],
@@ -117,13 +132,19 @@ class DetailFoodScreen extends StatelessWidget {
                     ),
                     shape: const CircleBorder(),
                   ),
-                  onPressed: () {},
-                  child: const Icon(Icons.add),
+                  onPressed: () {
+                    setState(() {
+                      if (quantity > 0) {
+                        quantity--;
+                      }
+                    });
+                  },
+                  child: const Icon(Icons.remove),
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  '0',
-                  style: textTheme.titleLarge,
+                  '$quantity',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(width: 6),
                 FilledButton(
@@ -133,38 +154,57 @@ class DetailFoodScreen extends StatelessWidget {
                     ),
                     shape: const CircleBorder(),
                   ),
-                  onPressed: () {},
-                  child: const Icon(Icons.remove),
+                  onPressed: () {
+                    setState(() {
+                      quantity++;
+                    });
+                  },
+                  child: const Icon(Icons.add),
                 ),
                 const SizedBox(width: 24),
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
-                      horizontal: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Palette.pinkMocha.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '0 IDR',
-                              style: textTheme.bodyMedium,
-                            ),
-                            Text(
-                              'Add to cart',
-                              style: textTheme.titleMedium,
-                            ),
-                          ],
-                        ),
-                        const Spacer(),
-                        const Icon(Icons.arrow_forward),
-                      ],
+                  child: InkWell(
+                    onTap: quantity <= 0
+                        ? null
+                        : () {
+                            context.read<Cart>().addToCart(
+                                  CartItem(
+                                      food: widget.food, quantity: quantity),
+                                );
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const CartScreen(),
+                              ),
+                            );
+                          },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8,
+                        horizontal: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Palette.pinkMocha.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${widget.food.price * quantity} IDR',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              Text(
+                                'Add to cart',
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          const Icon(Icons.arrow_forward),
+                        ],
+                      ),
                     ),
                   ),
                 ),

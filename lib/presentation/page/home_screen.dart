@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sushi_app/models/food.dart';
-import 'package:sushi_app/presentation/page/cart_screen.dart';
 import 'package:sushi_app/presentation/page/detail_food_screen.dart';
 import 'package:sushi_app/presentation/theme/palette.dart';
+import 'package:sushi_app/presentation/widget/cart_icon.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -71,19 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ],
               ),
+              const SizedBox(height: 8),
             ],
           ),
-          actions: [
-            IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const CartScreen(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.shopping_cart_outlined),
-            ),
+          actions: const [
+            CartIcon(),
           ],
           leading: const SizedBox(),
           leadingWidth: 0,
@@ -95,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
             searchBar(context),
             bestSellerContainer(textTheme),
             popularFoodCarousel(textTheme),
+            const SizedBox(height: 32),
           ],
         ),
       );
